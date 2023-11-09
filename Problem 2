@@ -1,0 +1,8 @@
+# The Number of passengers in Each bus
+
+SELECT B.bus_id,
+       COUNT(P.passenger_id) AS passengers_cnt
+FROM Buses B
+LEFT JOIN Passengers P ON B.arrival_time >= P.arrival_time
+GROUP BY B.bus_id
+ORDER BY B.bus_id;
