@@ -1,0 +1,8 @@
+select distinct d.activity_date as day, 
+    count(d.user_id) over (
+        partition by d.activity_date
+        order by d.activity_date 
+        ) 
+        as active_users
+    from (select distinct user_id, activity_date from Activity) d
+    where d.activity_date <= '2019-07-27' and d.activity_date > '2019-07-27' + INTERVAL -30 DAY
