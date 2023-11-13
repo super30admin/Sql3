@@ -1,0 +1,31 @@
+#problem 8
+
+with CTE as (
+    select num,
+lead(num,1) over () as num1,
+lead(num,2) over () as num2
+
+from Logs
+)
+select distinct num as ConsecutiveNums from cte where num=num1 and num1=num2
+
+#problem 9
+
+with cte as
+(select *, ifnull(lag (arrival_time,1) over(order by arrival_time),0) as next_at
+from Buses)
+
+select b.bus_id,  count(distinct p.passenger_id) passengers_cnt
+from cte b left join Passengers p
+on p.arrival_time <= b.arrival_time and p.arrival_time > b.next_at
+group by 1
+order by 1
+
+#problem 10
+
+with cte as(
+    select * from Activity where activity_date between date_sub('2019-07-27', INTERVAL 29 DAY) and '2019-07-27'
+)
+select  activity_date as day, count(distinct user_id) as active_users 
+from cte
+group by activity_date 
