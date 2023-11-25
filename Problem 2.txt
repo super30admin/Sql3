@@ -1,0 +1,10 @@
+with cte as (
+  Select p.passenger_id, min(b.arrival_time) as arrival_time from buses b 
+  inner join Passengers p on p.arrival_time<=b.arrival_time
+  group by passenger_id
+)
+Select b.bus_id, count(cte.arrival_time) as passengers_cnt
+from buses b
+left join cte on b.arrival_time = cte.arrival_time
+group by bus_id
+order by bus_id
