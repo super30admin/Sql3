@@ -1,0 +1,39 @@
+Question 1 :
+SELECT DISTINCT l1.num as ConsecutiveNums FROM Logs l1 , Logs l2 , Logs l3
+WHERE l1.id = l2.id -1 
+AND l2.id = l3.id - 1
+AND l1.num = l2.num AND l2.num = l3.num
+
+Question 2 :
+
+WITH CTE AS (SELECT p.passenger_id , MIN(b.arrival_time) as arrival_time
+FROM Passengers p INNER JOIN Buses b on p.arrival_time <= b.arrival_time
+GROUP BY p.passenger_id)
+
+SELECT b.bus_id , COUNT(CTE.arrival_time) as passengers_cnt
+FROM Buses b LEFT JOIN CTE ON b.arrival_time = CTE.arrival_time
+GROUP BY bus_id
+ORDER BY bus_id ;
+
+Question 3 :
+
+SELECT activity_date as day, COUNT(DISTINCT(user_id)) as active_users
+FROM activity
+GROUP BY activity_date
+HAVING activity_date BETWEEN '2019-06-28' and '2019-07-28'
+
+Question 4 : 
+CREATE PROCEDURE PivotProducts()
+BEGIN
+
+SET SESSION GROUP_CONCAT_MAX_LEN = 50000;
+SET @var = null ;
+SELECT GROUP_CONCAT(
+DISTINCT CONCAT(
+'SUM(IF(store ="', store,' ",price,null)) as ' ,store)) 
+INTO @var FROM Products;
+SET @var = CONCAT('SELECT product_id,' , @var ,' FROM Products GROUP BY 1');
+PREPARE STATEMENT FROM @var;
+EXECUTE STATEMENT;
+DEALLOCATE PREPARE STATEMENT; 
+END
