@@ -1,0 +1,14 @@
+# Write your MySQL query statement below
+
+select buses.bus_id, count(base_table.passenger_id) as passengers_cnt
+from buses
+left join
+(
+select p.passenger_id, min(b.arrival_time) as bus_arrival_time
+from passengers p
+left join buses b on p.arrival_time <= b.arrival_time
+group by 1
+) as base_table
+on buses.arrival_time = base_table.bus_arrival_time
+group by 1
+order by 1
