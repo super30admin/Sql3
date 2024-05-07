@@ -1,0 +1,54 @@
+Day 3:
+
+PROB 1: Consecutive numbers
+
+SELECT DISTINCT l1.num AS ConsecutiveNums FROM logs l1, logs l2, logs l3
+WHERE l1.id = l2.id-1 AND
+      l2.id =l3.id-1 AND
+      l1.num = l2.num AND
+      l2.num = l3.num
+
+
+
+
+PROB 2: The no of passengers in each bus 1
+
+WITH CTE AS(SELECT passenger_id ,MIN(B.arrival_time) AS arrival_time
+FROM Buses B JOIN Passengers P ON P.arrival_time <= B.arrival_time
+GROUP BY passenger_id )
+
+SELECT B.bus_id, COUNT(C.arrival_time) AS "passengers_cnt"
+FROM Buses B LEFT JOIN CTE C ON B.arrival_time = C.arrival_time
+GROUP BY B.bus_id
+ORDER BY B.bus_id
+
+
+
+
+PROB 3: User activity for past 30 days
+
+SELECT activity_date AS day , COUNT(DISTINCT user_id) AS active_users
+FROM activity 
+WHERE (activity_date > '2019-06-27' AND activity_date <= '2019-07-27')
+GROUP BY activity_date
+
+
+
+SELECT activity_date AS day , COUNT(DISTINCT user_id) AS active_users
+FROM activity 
+WHERE activity_date BETWEEN '2019-06-27' AND '2019-07-27'
+GROUP BY activity_date
+
+
+
+SELECT activity_date AS day , COUNT(DISTINCT user_id) AS active_users
+FROM activity 
+WHERE DATEDIFF('2019-07-27' , activity_date ) BETWEEN 0 AND 29
+GROUP BY 1
+
+
+
+SELECT activity_date AS day , COUNT(DISTINCT user_id) AS active_users
+FROM activity 
+WHERE activity_date BETWEEN DATE_SUB('2019-07-27', INTERVAL 29 DAY) AND '2019-07-27'
+GROUP BY 1
