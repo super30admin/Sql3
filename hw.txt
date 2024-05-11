@@ -1,0 +1,51 @@
+Problem 1 : Consecutive Numbers
+
+SELECT DISTINCT L2.num AS 'ConsecutiveNums' FROM 
+Logs L1, Logs L2, Logs L3
+WHERE L1.id + 1 = L2.id AND L2.id + 1 = L3.id AND L1.num = L2.num  AND L2.num = L3.num 
+
+Problem 2 :Number of Passengers in Each Bus
+
+WITH CTE AS(
+SELECT p.passenger_id, MIN(b.arrival_time) AS btime 
+FROM Passengers P INNER JOIN Buses b ON p.arrival_time <= b.arrival_time
+GROUP BY p.passenger_id)
+
+SELECT b.bus_id, COUNT(c.btime) AS 'passenger_cnt'
+FROM Buses b LEFT JOIN CTE c 
+ON b.arrival_time = c.btime
+GROUP BY b.bus_id
+ORDER BY b.bus_id
+
+Problem 3 :User Activity
+
+SELECT activity_date AS 'day', COUNT(DISTINCT user_id) AS 'active_users'
+FROM Activity
+WHERE activity_date > '2019-06-27' AND activity_date <= '2019-07-27'
+GROUP BY activity_date
+
+Problem 4 :Dynamic Pivoting of a Table
+
+HARD CODED
+
+SELECT product_id, 
+SUM(IF(store = "LC_Store", price, null)) AS 'LC_Store',
+SUM(IF(store = "Nozama", price, null)) AS 'Nozama',
+SUM(IF(store = "Shop", price, null)) AS 'Shop',
+SUM(IF(store = "Souq", price, null)) AS 'Souq'
+FROM Products
+GROUP BY product_id;
+
+
+WITH GROUP CONCAT
+
+CREATE PROCEDURE PivotProducts()
+BEGIN
+  SET SESSION GROUP_CONCAT_MAX_LEN = 1000000;
+  SELECT GROUP_CONCAT(DISTINCT CONCAT('SUM(IF(store = "', store, '",price, null)) AS ' store)
+  ) INTO @sql FROM Products;
+  SET @sql = CONCAT('SELECT product_id,  ', @sql, ' FROM Products GROUP BY 1');
+  PREPARE STATEMENT FROM @sql;
+  EXECUTE STATEMENT;
+  DEALLOCATE PREPARE STATEMENT;
+  END
