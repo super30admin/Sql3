@@ -1,0 +1,34 @@
+Problem 1 : Consecutive Numbers
+
+# Write your MySQL query statement below
+select a.num as ConsecutiveNums from 
+Logs a join Logs b on a.num = b.num join Logs c on b.num = c.num
+where a.id = b.id - 1 and b.id = c.id - 1
+group by a.num
+
+# Write your MySQL query statement below
+select distinct a.num as ConsecutiveNums from 
+Logs a join Logs b on a.num = b.num and a.id = b.id - 1 
+join Logs c on b.num = c.num and b.id = c.id - 1
+
+# Write your MySQL query statement below
+select distinct a.num as ConsecutiveNums from Logs a, Logs b, Logs c
+where a.num = b.num and b.num = c.num
+and a.id = b.id - 1 and a.id = c.id - 2
+
+Problem 3 : User Activity
+
+# Write your MySQL query statement below
+select activity_date as day, count(distinct user_id) as active_users
+from Activity;
+
+# Write your MySQL query statement below
+select activity_date as day, count(distinct user_id) as active_users
+from Activity
+where (activity_date > "2019-06-27" and activity_date <= "2019-07-27");
+
+# Write your MySQL query statement below
+select activity_date as day, count(distinct user_id) as active_users
+from Activity
+where (activity_date > "2019-06-27" and activity_date <= "2019-07-27")
+group by activity_date;
