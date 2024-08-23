@@ -1,0 +1,13 @@
+CREATE PROCEDURE PivotProducts()
+BEGIN
+	set session group_concat_max_len = 10000000;
+    select group_concat(distinct 
+    concat('sum(if(store = "', store, '", price, null)) as ', store)) into @sql from Products;
+
+    set @sql = concat('select product_id, ', @sql, ' from Products group by 1');
+    
+    prepare statement from @sql;
+    execute statement;
+    deallocate prepare statement;
+
+END

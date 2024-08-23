@@ -1,0 +1,11 @@
+with cte as (
+select b.bus_id, p.passenger_id, rank() over (partition by p.passenger_id order by b.arrival_time) as rnk
+from Buses b
+left join Passengers p on p.arrival_time <= b.arrival_time
+)
+select b.bus_id, count(t1.passenger_id) as passengers_cnt 
+from Buses b
+left join cte t1 on b.bus_id = t1.bus_id
+and t1.rnk = 1
+group by 1
+order by 1
