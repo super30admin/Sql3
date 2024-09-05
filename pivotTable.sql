@@ -1,0 +1,12 @@
+CREATE PROCEDURE PivotProducts()
+BEGIN
+	# Write your MySQL query statement below.
+    set session group_concat_max_len = 1000000;
+    SELECT GROUP_CONCAT(DISTINCT CONCAT ('SUM(IF(STORE = "', 
+    STORE, '", PRICE, NULL)) AS ', STORE )) INTO @SQL FROM PRODUCTS;
+    -- SELECT @SQL;
+    SET @SQL = CONCAT('SELECT product_id, ', @SQL, ' FROM PRODUCTS GROUP BY 1');
+    PREPARE STATEMENT FROM @SQL;
+    EXECUTE STATEMENT;
+    DEALLOCATE PREPARE STATEMENT;
+END
