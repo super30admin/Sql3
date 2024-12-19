@@ -1,0 +1,7 @@
+WITH CTE AS (
+    SELECT p.passanger_id,
+    p.arrival_time,
+    min(b.arrival_time) AS b.arrival_time FROM passangers p 
+    INNER JOIN Busses b ON p,arrival_time <= b.arrival_time
+    GROUP BY p.passanger_id
+)
