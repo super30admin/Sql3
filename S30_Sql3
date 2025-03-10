@@ -1,0 +1,82 @@
+#ConsecutiveNumbers_Solution_Q1
+
+SELECT DISTINCT l1.num AS ConsecutiveNums
+FROM Logs l1, Logs l2, Logs l3
+WHERE l1.id= l2.id-1 AND
+        l2.id= l3.id-1 AND
+        l1.num = l2.num AND l2.num = l3.num;
+
+
+-------------------------------------------------------------------------------------------------------------
+
+#NumberofPassengersinEachBus_Solution_Q2
+
+# use LEFT JOIN as temp table and group by 
+
+WITH cte AS
+(SELECT p.passenger_id, p.arrival_time, MIN(b.arrival_time) AS 'b_time'
+FROM passengers p
+LEFT JOIN Buses b ON p.arrival_time <= b.arrival_time
+GROUP BY p.passenger_id)
+
+SELECT b.bus_id, COUNT(c.b_time) AS 'passengers_cnt'
+FROM Buses b
+LEFT JOIN cte c ON b.arrival_time= c.b_time
+GROUP BY b.bus_id
+ORDER BY b.bus_id;
+
+
+-------------------------------------------------------------------------------------------------------------
+
+#UserActivity_Solution_Q3
+
+SELECT activity_date AS 'day', COUNT(DISTINCT user_id) AS 'active_users' 
+FROM activity 
+WHERE activity_date > '2019-06-27' AND activity_date <= '2019-07-27'
+GROUP BY activity_date;
+
+# Alternative1
+
+SELECT activity_date AS 'day', COUNT(DISTINCT user_id) AS 'active_users' 
+FROM activity 
+WHERE activity_date BETWEEN '2019-06-27' AND '2019-07-27'
+GROUP BY activity_date;
+
+
+# Alternative2 
+
+#DATE_SUB() 
+
+SELECT activity_date AS 'day', COUNT(DISTINCT user_id) AS 'active_users'
+FROM activity 
+WHERE activity_date BETWEEN DATE_SUB('2019-07-27', INTERVAL 29 DAY) AND '2019-07-27' GROUP BY day;
+
+# Alternative3
+
+#DATE_ADD()
+
+SELECT activity_date AS 'day', COUNT(DISTINCT user_id) AS 'active_users'
+FROM activity 
+WHERE activity_date BETWEEN DATE_ADD('2019-07-27', INTERVAL -29 DAY) AND '2019-07-27' GROUP BY day;
+
+# Alternative4 
+
+#DATEDIFF
+
+SELECT activity_date AS 'day', COUNT(DISTINCT user_id) AS 'active_users' 
+FROM activity 
+WHERE DATEDIFF('2019-07-27', activity_date) >=0 AND DATEDIFF('2019-07-27', activity_date) < 30
+GROUP BY activity_date;
+
+
+-------------------------------------------------------------------------------------------------------------
+#DynamicPivotingofaTable_Solution_Q4
+
+SELECT product_id,
+  SUM(IF(store = 'LC_Store', price, NULL)) AS LC_Store,
+  SUM(IF(store = 'Nozama', price, NULL)) AS Nozama,
+  SUM(IF(store = 'Shop', price, NULL)) AS Shop,
+  SUM(IF(store = 'Souq', price, NULL)) AS Souq
+FROM Products p
+GROUP BY 1;
+
