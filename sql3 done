@@ -1,0 +1,69 @@
+--PROBLEM1:CONSECUTIVE NUMBERS
+select distinct num as consucetivenum 
+from(
+	select num,
+		lead(num,1) over(order by id) as next1,
+		lead(num,2)over(order by id) as next2
+		from Logs
+		) temp
+	where num = next1 and num = next2
+
+
+
+--PROBLEM2: NUMBER OF PASSENGERS IN EACH BUS**
+WITH RankedPassengers AS (
+    SELECT p.passenger_id, 
+           p.arrival_time, 
+           b.arrival_time AS bus_time,
+           ROW_NUMBER() OVER (PARTITION BY p.passenger_id ORDER BY b.arrival_time) AS rn
+    FROM Passengers p
+    JOIN Buses b ON p.arrival_time <= b.arrival_time
+)
+SELECT b.bus_id, 
+       COUNT(r.passenger_id) AS Passengers_cnt
+FROM Buses b
+LEFT JOIN RankedPassengers r ON b.arrival_time = r.bus_time AND r.rn = 1
+GROUP BY b.bus_id
+ORDER BY b.bus_id;
+
+
+
+--PROBLEM3: USER AVTIVITY
+using date diff
+SELECT ACTIVITY_DATE AS 'DAY', COUNT(DISTINCT(USER_ID)) AS ACTIVE_USERS
+FROM ACTIVITY WHERE  DATEDIFF('2019-07-27',ACTIVITY_DATE) BETWEEN 0 AND 29
+GROUP BY ACTIVITY_DATE;
+
+using date_sub
+SELECT ACTIVITY_DATE AS 'DAY', COUNT(DISTINCT(USER_ID)) AS ACTIVE_USERS
+FROM ACTIVITY WHERE  ACTIVITY_DATE BETWEEN date_sub('2019-07-27', INTERVAL 29 DAY)  AND '2019-07-27'
+GROUP BY ACTIVITY_DATE;
+
+using Having clause
+SELECT ACTIVITY_DATE AS 'DAY', COUNT(DISTINCT(USER_ID)) AS ACTIVE_USERS
+FROM ACTIVITY GROUP BY ACTIVITY_DATE
+HAVING ACTIVITY_DATE > '2019-06-27' AND ACTIVITY_DATE <= '2019-07-27'; 
+
+
+
+
+--PROBLEM4: --Dynamic Pivoting of a Table
+CREATE PROCEDURE PivotProducts
+AS
+BEGIN
+    -- Declare variables to store the dynamic SQL query and the list of store names
+    DECLARE @sql NVARCHAR(MAX);
+    DECLARE @columns NVARCHAR(MAX);
+    
+    -- Step 1: Generate the dynamic column list for the stores
+    SELECT @columns = STRING_AGG(QUOTENAME(store), ', ')
+    FROM (SELECT DISTINCT store FROM Products) AS distinct_stores;
+    
+    -- Step 2: Construct the dynamic SQL query to pivot products by store
+    SET @sql = 'SELECT product_id, ' + @columns + ' FROM ('
+               + 'SELECT product_id, store, price FROM Products) AS source '
+               + 'PIVOT (SUM(price) FOR store IN (' + @columns + ')) AS pvt';
+    
+    -- Step 3: Execute the dynamic SQL query
+    EXEC sp_executesql @sql;
+END;
