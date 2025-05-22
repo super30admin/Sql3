@@ -1,6 +1,6 @@
 # Sql3
 
-1 Problem 1 : Consecutive Numbers	(https://leetcode.com/problems/consecutive-numbers/)
+Problem 1  : Consecutive Numbers	(https://leetcode.com/problems/consecutive-numbers/)
 
 2 Problem 2 :Number of Passengers in Each Bus 	(	https://leetcode.com/problems/the-number-of-passengers-in-each-bus-i/ )
 
