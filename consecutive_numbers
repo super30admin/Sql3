@@ -1,0 +1,9 @@
+SELECT  DISTINCT num AS ConsecutiveNums
+FROM (
+    SELECT  num,
+            LEAD(num,1) OVER(ORDER BY id) second_num,
+            LEAD(num,2) OVER(ORDER BY id) third_num
+    FROM logs
+    ) a
+WHERE num = second_num
+AND num = third_num;
